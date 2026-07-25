@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "词源卡导入助手",
+  "version": "0.2.0",
+  "description": "输入或划选单词，生成词源卡并直接导入 Anki。",
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "activeTab",
+    "sidePanel",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://api.deepseek.com/*",
+    "https://dictionary.cambridge.org/*",
+    "https://dict.youdao.com/*",
+    "http://127.0.0.1:8765/*"
+  ],
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "词源卡导入助手",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icon-128.png"
+    }
+  },
+  "commands": {
+    "import-selected-word": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+D",
+        "mac": "MacCtrl+Shift+D"
+      },
+      "description": "导入当前选中的单词到 Anki 词源卡"
+    }
+  },
+  "side_panel": {
+    "default_path": "panel.html"
+  }
+}

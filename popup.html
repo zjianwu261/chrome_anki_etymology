@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>词源卡导入助手</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="app">
+      <header class="hero compact-hero">
+        <p class="eyebrow">Anki + DeepSeek</p>
+        <h1>词源卡导入助手</h1>
+        <p class="sub">运行状态和中文含义在最前面，便于快速确认当前单词。</p>
+      </header>
+
+      <section class="panel status-panel status-priority status-first">
+        <div class="status-head">
+          <span>运行状态</span>
+          <span id="ankiStatus" class="pill pill-muted">检测中</span>
+        </div>
+        <div id="summary" class="summary">准备就绪。</div>
+        <div class="meaning-row">
+          <div class="meaning-label">当前单词</div>
+          <div id="currentWord" class="meaning-value">-</div>
+        </div>
+        <div class="meaning-row">
+          <div class="meaning-label">中文含义</div>
+          <div id="currentMeaning" class="meaning-value">-</div>
+        </div>
+        <pre id="logOutput" class="log"></pre>
+      </section>
+
+      <section class="panel panel-priority">
+        <div class="field field-first">
+          <label for="wordsInput">输入单词</label>
+          <textarea id="wordsInput" rows="8" placeholder="一行一个单词，例如：&#10;master&#10;resolve&#10;meticulous"></textarea>
+        </div>
+
+        <button id="runButton" class="primary-button" type="button">生成并导入 Anki</button>
+      </section>
+
+      <details class="panel settings-panel">
+        <summary class="settings-summary">配置设置</summary>
+
+        <div class="field">
+          <label for="apiKey">DeepSeek API Key</label>
+          <div class="inline-row">
+            <input id="apiKey" type="password" placeholder="sk-..." autocomplete="off">
+            <button id="toggleKey" class="ghost-button" type="button">显示</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="modelName">模型</label>
+          <input id="modelName" type="text" value="deepseek-chat" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label for="deckName">导入牌组</label>
+          <div class="inline-row">
+            <select id="deckName"></select>
+            <button id="refreshDecks" class="ghost-button" type="button">刷新</button>
+          </div>
+        </div>
+
+        <div class="checks">
+          <label class="check">
+            <input id="attachAudio" type="checkbox" checked>
+            <span>导入时同步写入音频</span>
+          </label>
+          <label class="check">
+            <input id="youdaoFallback" type="checkbox" checked>
+            <span>Cambridge 失败时用有道兜底</span>
+          </label>
+          <label class="check">
+            <input id="allowDuplicate" type="checkbox">
+            <span>允许重复导入同名单词</span>
+          </label>
+          <label class="check">
+            <input id="autoImportOnCopy" type="checkbox">
+            <span>在网页复制单词即自动导入（默认关闭）</span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label for="concurrency">批量并发数</label>
+          <input id="concurrency" type="number" min="1" max="8" value="3">
+        </div>
+
+        <div class="button-row">
+          <button id="saveSettings" class="ghost-button" type="button">保存设置</button>
+          <button id="clearSettings" class="ghost-button" type="button">清除密钥</button>
+        </div>
+      </details>
+    </main>
+
+    <script src="common.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
