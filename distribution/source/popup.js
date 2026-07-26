@@ -65,7 +65,7 @@ async function loadSettings() {
 
 async function saveSettings() {
   await chrome.storage.local.set({
-    apiKey: elements.apiKey.value.trim(),
+    apiKey: sanitizeApiKey(elements.apiKey.value),
     modelName: elements.modelName.value.trim() || "deepseek-v4-flash",
     deckName: elements.deckName.value,
     attachAudio: elements.attachAudio.checked,
@@ -124,13 +124,21 @@ function renderDecks(decks) {
   });
 }
 
+function sanitizeApiKey(raw) {
+  // 去除不可见 Unicode 字符（零宽空格、BOM 等），API Key 只能是 ASCII
+  return String(raw || "")
+    .trim()
+    .replace(/[​-‍﻿ ]/g, "")
+    .replace(/[^\x20-\x7E]/g, "");
+}
+
 function clampConcurrency(value) {
   const n = Math.round(Number(value) || 3);
   return Math.min(8, Math.max(1, n));
 }
 
 async function handleRun() {
-  const apiKey = elements.apiKey.value.trim();
+  const apiKey = sanitizeApiKey(elements.apiKey.value);
   const modelName = elements.modelName.value.trim() || "deepseek-v4-flash";
   const deckName = elements.deckName.value;
   const attachAudio = elements.attachAudio.checked;
