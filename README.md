@@ -92,7 +92,7 @@ cd distribution/source/native-host
 
 ```
 ├── README.md                   # 项目说明（本文件）
-├── .gitignore                  # Git 忽略规则（API 密钥 / 数据文件不上传）
+├── .gitignore                  # Git 忽略规则
 ├── distribution/               # Chrome 扩展根目录（在 Chrome 中加载此文件夹）
 │   ├── manifest.json           # Chrome 扩展清单 (Manifest V3)
 │   ├── icon-128.png            # 扩展图标
@@ -107,7 +107,6 @@ cd distribution/source/native-host
 │       └── native-host/        # 可选：本地剪贴板监听
 │           ├── clipboard_host.py   # Native Messaging 宿主脚本
 │           └── install_native_host.sh  # macOS 安装脚本
-└── readme/                     # 文档补充资源（截图、安装说明等）
 ```
 
 ## 依赖服务
