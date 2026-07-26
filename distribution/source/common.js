@@ -5,7 +5,8 @@ const YOUDAO_VOICE = "https://dict.youdao.com/dictvoice";
 
 const ANKI_FIELDS = [
   "Word", "Part_of_Speech", "Pronunciation", "Example_Sentence",
-  "Example_ZH", "Etymology_Breakdown", "Semantic_Evolution", "Memory_Tip"
+  "Example_ZH", "Etymology_Breakdown", "Semantic_Evolution", "Memory_Tip",
+  "Related_Cards"
 ];
 
 const DEEPSEEK_RETRY_TIMES = 3;
@@ -364,36 +365,165 @@ async function storeMediaFile(filename, bytes) {
 const MODEL_NAME = "词源卡";
 let modelEnsured = false;
 
-const MODEL_CSS = `.card{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:17px;line-height:1.6;color:#1c1c1e;background:#fff;text-align:left;max-width:680px;margin:0 auto;padding:14px 18px;}
-.word{font-size:30px;font-weight:700;text-align:center;}
-.pron{text-align:center;color:#8a6d3b;font-size:18px;margin:4px 0;}
-.pos{text-align:center;color:#666;font-size:14px;margin-bottom:6px;}
-hr{border:none;border-top:1px solid #e3e3e6;margin:12px 0;}
-.ex-en{display:block;}
-.ex-zh{display:block;color:#666;font-size:15px;}
-.etym-lit{color:#0a7d4b;}
-.etym-concl{color:#444;font-style:italic;}
-.ep-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;}
-.ep-chip{background:#f2f2f7;border-radius:10px;padding:6px 10px;}
-.ep-part{font-weight:700;display:block;}
-.ep-origin{color:#8e8e93;font-size:13px;display:block;}
-.ep-meaning{font-size:14px;display:block;}
-.stage{background:#f7f7fa;border-left:3px solid #c7c7cc;border-radius:6px;padding:8px 12px;margin:8px 0;}
-.stage-title{font-weight:700;color:#3a3a3c;margin-bottom:4px;}
-.tip{background:#fff7e6;border-radius:8px;padding:8px 12px;margin-top:10px;}`;
+const MODEL_CSS = `.card{font-family:'Crimson Pro','Noto Serif SC',Georgia,serif;max-width:680px;margin:0 auto;background:#ffffff;border:none;box-shadow:none;text-align:left;color:#111;position:relative;}
+.front{padding:58px 54px 50px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:360px;text-align:center;}
+.orn{font-size:18px;color:rgba(0,0,0,0.12);margin-bottom:22px;letter-spacing:.22em;}
+.f-word-row{display:flex;align-items:baseline;justify-content:center;gap:12px;flex-wrap:wrap;}
+.f-word{font-family:'IM Fell English',Georgia,serif;font-size:66px;color:#111;line-height:1;letter-spacing:-.01em;}
+.f-pos{font-size:16px;font-style:italic;color:#555;}
+.f-ipa{font-size:21px;color:#888;letter-spacing:.02em;}
+.f-rule{width:120px;height:1px;margin:28px auto;position:relative;background:linear-gradient(90deg,transparent,#333,transparent);}
+.f-rule::before{content:'✦';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;color:#333;background:#fff;padding:0 5px;}
+.f-ex-lbl{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:rgba(0,0,0,0.22);margin-bottom:10px;}
+.f-ex{font-size:19px;font-style:italic;color:#222;line-height:1.9;text-align:center;max-width:500px;}
+.f-ex-zh{font-family:'Noto Serif SC',serif;font-size:15px;color:#999;margin-top:8px;text-align:center;line-height:1.8;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,#ddd,transparent);}
+.f-audio-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;background:none;border:none;color:rgba(0,0,0,0.18);cursor:pointer;transition:color .18s,transform .15s;flex-shrink:0;outline:none;align-self:center;}
+.f-audio-btn svg{width:20px;height:20px;}
+.f-audio-btn:hover{color:#555;}
+.f-audio-btn.playing{color:#222;transform:scale(1.2);}
+.replay-button{display:none!important;}
+.back{padding:38px 50px 46px;}
+.b-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid #eee;padding-bottom:16px;margin-bottom:24px;position:relative;}
+.b-head::after{content:'';position:absolute;bottom:-1px;left:0;width:36px;height:2px;background:#333;}
+.b-word{font-family:'IM Fell English',Georgia,serif;font-size:32px;color:#111;line-height:1;}
+.b-pos{font-size:13px;font-style:italic;color:#555;padding:3px 9px;border:1px solid #ddd;border-radius:3px;}
+.b-ipa{font-size:16px;color:#999;margin-left:auto;letter-spacing:.02em;}
+.sec{margin-bottom:22px;}
+.sec-lbl{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#bbb;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.sec-num{font-size:11px;background:#f5f5f5;border:1px solid #e0e0e0;border-radius:2px;padding:0 6px;color:#aaa;font-style:normal;}
+.hr{height:1px;margin:18px 0;background:linear-gradient(90deg,transparent,#eee 30%,#eee 70%,transparent);}
+.etym-intro{font-size:16px;line-height:1.85;color:#333;margin-bottom:12px;}
+.ep-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+.ep-chip{background:#f6f6f6;border:1px solid #e4e4e4;border-radius:3px;padding:7px 13px 8px;}
+.ep-part{display:block;font-size:13.5px;font-weight:600;color:#111;margin-bottom:3px;}
+.ep-origin{display:block;font-size:11.5px;color:#aaa;font-style:italic;margin-bottom:3px;}
+.ep-meaning{display:block;font-size:12.5px;color:#444;line-height:1.6;}
+.etym-lit{font-size:15px;color:#666;font-style:italic;margin-top:10px;padding-left:12px;border-left:2px solid #e0e0e0;line-height:1.8;}
+.etym-concl{font-size:16px;color:#111;margin-top:10px;font-weight:600;line-height:1.8;}
+.stage{margin-bottom:16px;padding-bottom:16px;border-bottom:1px dashed #eee;}
+.stage:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
+.stage-title{font-size:15px;font-weight:600;color:#222;margin-bottom:6px;display:flex;align-items:center;gap:7px;line-height:1.45;}
+.stage-title::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#333;flex-shrink:0;}
+.stage-meaning{font-size:15px;line-height:1.85;color:#333;margin-bottom:8px;}
+.stage-ex{background:#fafafa;border-left:2.5px solid #ccc;padding:8px 12px;border-radius:0 3px 3px 0;}
+.ex-en{display:block;font-style:italic;font-size:14px;color:#222;line-height:1.8;}
+.ex-zh{display:block;font-family:'Noto Serif SC',serif;font-size:13px;color:#777;margin-top:4px;line-height:1.75;}
+.mem{background:#fafafa;border:1px solid #ececec;border-left:3px solid #ccc;padding:11px 15px 12px 20px;font-size:15px;font-family:'Noto Serif SC',serif;color:#333;line-height:1.8;border-radius:0 3px 3px 0;position:relative;}
+.b-audio-btn{margin-left:auto;align-self:center;}
+.b-foot{margin-top:22px;text-align:center;color:#ddd;font-size:14px;}
+.stage-meaning strong{color:#111;font-weight:600;}
+.stage+.stage{margin-top:2px;}
+.etym-concl+.stage{margin-top:14px;}
+.sec .stage-meaning{font-family:'Noto Serif SC','Crimson Pro',serif;}
+.nl-links-box{margin-top:14px;padding-top:8px;border-top:1px dashed #999;font-size:14px;text-align:left;}
+.nl-links-title{color:#888;font-size:12px;margin-bottom:4px;}
+a.nl-link{display:inline-block;margin:2px 4px 2px 0;padding:2px 8px;border-radius:10px;background:rgba(66,133,244,.12);color:#4285f4;text-decoration:none;}
+a.nl-link:hover{background:rgba(66,133,244,.25);}`;
 
-const CARD_FRONT = `<div class="word">{{Word}}</div>
-<div class="pron">{{Pronunciation}}</div>
-<div class="pos">{{Part_of_Speech}}</div>
-[sound:{{Word}}.mp3]`;
+const CARD_FRONT = `<div class="card front">
+<div class="orn">✦ &nbsp;✦ &nbsp;✦</div>
 
-const CARD_BACK = `{{FrontSide}}
-<hr>
-<div class="ex-en">{{Example_Sentence}}</div>
-<div class="ex-zh">{{Example_ZH}}</div>
-<div>{{Etymology_Breakdown}}</div>
-<div>{{Semantic_Evolution}}</div>
-{{#Memory_Tip}}<div class="tip">💡 {{Memory_Tip}}</div>{{/Memory_Tip}}`;
+<div class="f-word-row">
+<div class="f-word">{{Word}}</div>
+<div class="f-ipa">{{Pronunciation}}</div>
+<div class="f-pos">{{Part_of_Speech}}</div>
+<button class="f-audio-btn" id="audioBtn" onclick="playAudio()" title="按 K 键重复播放">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+<path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM18.584 5.106a.75.75 0 0 1 1.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 0 1-1.06-1.06 8.25 8.25 0 0 0 0-11.668.75.75 0 0 1 0-1.06ZM15.932 7.757a.75.75 0 0 1 1.061 0 6 6 0 0 1 0 8.486.75.75 0 0 1-1.06-1.061 4.5 4.5 0 0 0 0-6.364.75.75 0 0 1 0-1.06Z"/>
+</svg>
+</button>
+</div>
+
+<div class="f-rule"></div>
+<div class="f-ex-lbl">Example</div>
+<div class="f-ex">{{Example_Sentence}}</div>
+<div class="f-ex-zh">{{Example_ZH}}</div>
+
+[sound:{{Word}}.mp3]
+
+<script>
+function playAudio() {
+var nativeBtn = document.querySelector('.replay-button');
+if (nativeBtn) { nativeBtn.click(); return; }
+var audio = document.querySelector('audio');
+if (audio) { audio.currentTime = 0; audio.play(); }
+}
+document.addEventListener('keydown', function(e) {
+if (e.key === 'k' || e.key === 'K') {
+e.preventDefault();
+playAudio();
+var btn = document.getElementById('audioBtn');
+if (btn) {
+btn.classList.add('playing');
+setTimeout(function() { btn.classList.remove('playing'); }, 300);
+}
+}
+});
+</script>
+</div>`;
+
+const CARD_BACK = `<div class="card back">
+<!-- 页眉 -->
+<div class="b-head">
+<div class="b-word">{{Word}}</div>
+<div class="b-ipa">{{Pronunciation}}</div>
+<div class="b-pos">{{Part_of_Speech}}</div>
+<button class="f-audio-btn b-audio-btn" id="audioBtn" onclick="playAudio()" title="按 K 键重复播放">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+<path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM18.584 5.106a.75.75 0 0 1 1.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 0 1-1.06-1.06 8.25 8.25 0 0 0 0-11.668.75.75 0 0 1 0-1.06ZM15.932 7.757a.75.75 0 0 1 1.061 0 6 6 0 0 1 0 8.486.75.75 0 0 1-1.06-1.061 4.5 4.5 0 0 0 0-6.364.75.75 0 0 1 0-1.06Z"/>
+</svg>
+</button>
+</div>
+
+<!-- 1. 词源拆解 -->
+<div class="sec">
+<div class="sec-lbl"><span class="sec-num">1</span>词源拆解</div>
+{{Etymology_Breakdown}}
+</div>
+
+<div class="hr"></div>
+
+<!-- 2. 语义演变 -->
+<div class="sec">
+<div class="sec-lbl"><span class="sec-num">2</span>语义演变</div>
+{{Semantic_Evolution}}
+</div>
+
+<div class="hr"></div>
+
+<!-- 记忆技巧 -->
+<div class="sec">
+<div class="sec-lbl">记忆技巧</div>
+<div class="mem">{{Memory_Tip}}</div>
+</div>
+
+<div class="b-foot">· · ·</div>
+
+[sound:{{Word}}.mp3]
+
+<script>
+function playAudio() {
+var nativeBtn = document.querySelector('.replay-button');
+if (nativeBtn) { nativeBtn.click(); return; }
+var audio = document.querySelector('audio');
+if (audio) { audio.currentTime = 0; audio.play(); }
+}
+document.addEventListener('keydown', function(e) {
+if (e.key === 'k' || e.key === 'K') {
+e.preventDefault();
+playAudio();
+var btn = document.getElementById('audioBtn');
+if (btn) {
+btn.classList.add('playing');
+setTimeout(function() { btn.classList.remove('playing'); }, 300);
+}
+}
+});
+</script>
+</div>
+
+{{#Related_Cards}}<div class="nl-links-box"><div class="nl-links-title">🔗 相关卡片</div>{{Related_Cards}}</div>{{/Related_Cards}}`;
 
 async function ensureModelExists() {
   if (modelEnsured) {
@@ -480,7 +610,8 @@ async function importWordToAnki(config) {
     Example_ZH: analysis.example_zh || "",
     Etymology_Breakdown: renderEtymology(analysis),
     Semantic_Evolution: renderSemanticEvolution(analysis),
-    Memory_Tip: analysis.memory_tip || ""
+    Memory_Tip: analysis.memory_tip || "",
+    Related_Cards: ""
   };
 
   let audioSource = null;
