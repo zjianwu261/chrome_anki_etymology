@@ -54,7 +54,7 @@ function attachEvents() {
 async function loadSettings() {
   const stored = await chrome.storage.local.get(settingsKeys);
   elements.apiKey.value = stored.apiKey || "";
-  elements.modelName.value = stored.modelName || "deepseek-v4-pro";
+  elements.modelName.value = stored.modelName || "deepseek-v4-flash";
   elements.attachAudio.checked = stored.attachAudio !== false;
   elements.youdaoFallback.checked = stored.youdaoFallback !== false;
   elements.allowDuplicate.checked = Boolean(stored.allowDuplicate);
@@ -66,7 +66,7 @@ async function loadSettings() {
 async function saveSettings() {
   await chrome.storage.local.set({
     apiKey: elements.apiKey.value.trim(),
-    modelName: elements.modelName.value.trim() || "deepseek-v4-pro",
+    modelName: elements.modelName.value.trim() || "deepseek-v4-flash",
     deckName: elements.deckName.value,
     attachAudio: elements.attachAudio.checked,
     youdaoFallback: elements.youdaoFallback.checked,
@@ -131,7 +131,7 @@ function clampConcurrency(value) {
 
 async function handleRun() {
   const apiKey = elements.apiKey.value.trim();
-  const modelName = elements.modelName.value.trim() || "deepseek-v4-pro";
+  const modelName = elements.modelName.value.trim() || "deepseek-v4-flash";
   const deckName = elements.deckName.value;
   const attachAudio = elements.attachAudio.checked;
   const youdaoFallback = elements.youdaoFallback.checked;
