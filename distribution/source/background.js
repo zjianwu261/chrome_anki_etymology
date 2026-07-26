@@ -90,7 +90,7 @@ async function importSelectedWord(rawWord, sourceLabel) {
     });
     const result = await importWordToAnki({
       apiKey: stored.apiKey,
-      modelName: stored.modelName || "deepseek-chat",
+      modelName: stored.modelName || "deepseek-v4-pro",
       deckName: stored.deckName,
       attachAudio: stored.attachAudio !== false,
       allowDuplicate: Boolean(stored.allowDuplicate),
