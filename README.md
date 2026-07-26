@@ -107,10 +107,7 @@ cd distribution/source/native-host
 │       └── native-host/        # 可选：本地剪贴板监听
 │           ├── clipboard_host.py   # Native Messaging 宿主脚本
 │           └── install_native_host.sh  # macOS 安装脚本
-├── data/                       # API 配置 & 本地密钥（不上传 GitHub）
-│   ├── README.md
-│   └── .env.example            # 环境变量模板
-└── readme/                     # 文档补充资源（截图等）
+└── readme/                     # 文档补充资源（截图、安装说明等）
 ```
 
 ## 依赖服务
