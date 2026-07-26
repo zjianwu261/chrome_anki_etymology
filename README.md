@@ -45,7 +45,7 @@
 ### 可选：本地剪贴板监听（macOS）
 
 ```bash
-cd native-host
+cd distribution/source/native-host
 ./install_native_host.sh <你的扩展ID>
 ```
 
@@ -91,18 +91,26 @@ cd native-host
 ## 项目结构
 
 ```
-├── manifest.json           # Chrome 扩展清单 (Manifest V3)
-├── background.js           # Service Worker：右键菜单、快捷键、导入调度
-├── common.js               # 公共逻辑：AnkiConnect 桥接、DeepSeek API、音频抓取
-├── content.js              # 内容脚本：划词检测、复制触发自动导入
-├── popup.html              # 弹窗界面
-├── popup.js                # 弹窗交互逻辑
-├── popup.css               # 弹窗样式
-├── panel.html              # 侧边栏界面
-├── icon-128.png            # 扩展图标
-└── native-host/            # 可选：本地剪贴板监听
-    ├── clipboard_host.py   # Native Messaging 宿主脚本
-    └── install_native_host.sh  # macOS 安装脚本
+├── README.md                   # 项目说明（本文件）
+├── .gitignore                  # Git 忽略规则（API 密钥 / 数据文件不上传）
+├── distribution/               # Chrome 扩展根目录（在 Chrome 中加载此文件夹）
+│   ├── manifest.json           # Chrome 扩展清单 (Manifest V3)
+│   ├── icon-128.png            # 扩展图标
+│   └── source/                 # 扩展源代码
+│       ├── background.js       # Service Worker：右键菜单、快捷键、导入调度
+│       ├── common.js           # 公共逻辑：AnkiConnect 桥接、DeepSeek API、音频抓取
+│       ├── content.js          # 内容脚本：划词检测、复制触发自动导入
+│       ├── popup.html          # 弹窗界面
+│       ├── popup.js            # 弹窗交互逻辑
+│       ├── popup.css           # 弹窗样式
+│       ├── panel.html          # 侧边栏界面
+│       └── native-host/        # 可选：本地剪贴板监听
+│           ├── clipboard_host.py   # Native Messaging 宿主脚本
+│           └── install_native_host.sh  # macOS 安装脚本
+├── data/                       # API 配置 & 本地密钥（不上传 GitHub）
+│   ├── README.md
+│   └── .env.example            # 环境变量模板
+└── readme/                     # 文档补充资源（截图等）
 ```
 
 ## 依赖服务

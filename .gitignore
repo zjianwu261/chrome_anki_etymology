@@ -1,26 +1,71 @@
-# Python
+# ===== API Keys & Secrets (CRITICAL — never commit) =====
+data/.env
+data/*.private
+data/*.key
+data/config*.json
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials.json
+
+# ===== Environment & local overrides =====
+.env
+.env.*
+!.env.example
+*.local
+*.private
+
+# ===== Python =====
 __pycache__/
 *.py[cod]
 *.pyo
-.env
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
 
-# macOS
+# ===== macOS =====
 .DS_Store
 .AppleDouble
 .LSOverride
+._*
+Icon?
 
-# IDE / Editor
+# ===== IDE / Editor =====
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-*
 
-# Logs
+# ===== Logs =====
 *.log
+logs/
 
-# Node (if any tooling is added later)
+# ===== Node (if tooling is added later) =====
 node_modules/
+package-lock.json
+.npm/
 
-# Sensitive — never commit API keys or local config overrides
-*.local
-*.private
+# ===== OS junk =====
+Thumbs.db
+$RECYCLE.BIN/
+Desktop.ini
+
+# ===== Archive / temp =====
+*.zip
+*.tar.gz
+*.rar
+*.tmp
+*.temp
+tmp/
+temp/

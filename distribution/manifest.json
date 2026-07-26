@@ -20,7 +20,7 @@
     "128": "icon-128.png"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "source/background.js"
   },
   "content_scripts": [
     {
@@ -28,14 +28,14 @@
         "<all_urls>"
       ],
       "js": [
-        "content.js"
+        "source/content.js"
       ],
       "run_at": "document_idle"
     }
   ],
   "action": {
     "default_title": "词源卡导入助手",
-    "default_popup": "popup.html",
+    "default_popup": "source/popup.html",
     "default_icon": {
       "128": "icon-128.png"
     }
@@ -50,6 +50,6 @@
     }
   },
   "side_panel": {
-    "default_path": "panel.html"
+    "default_path": "source/panel.html"
   }
 }
