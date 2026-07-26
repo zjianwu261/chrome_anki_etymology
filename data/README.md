@@ -1,14 +1,36 @@
-# Data 目录
+# API 配置
 
-本目录用于存放 API 配置、本地密钥等敏感数据文件。
+本扩展所需的 API Key **无法通过本地文件注入**——Chrome 扩展运行在浏览器沙箱中，无法读取本地文件系统上的 `.env` 文件。
 
-## 文件说明
+## 配置方式
 
-- `.env.example` — 环境变量模板，可安全提交到 Git
-- `.env` — 实际密钥文件，**已被 .gitignore 排除，不会同步到 GitHub**
+所有配置通过**扩展弹窗 UI** 完成，保存到 `chrome.storage.local`：
 
-## 使用方式
+1. 点击 Chrome 工具栏中的扩展图标
+2. 展开「配置设置」
+3. 填入 **DeepSeek API Key**（以 `sk-` 开头）
+4. 选择目标 **Anki 牌组**
+5. 点击「保存设置」
 
-1. 复制 `.env.example` 为 `.env`
-2. 在 `.env` 中填入真实的 DeepSeek API Key
-3. Chrome 扩展本身通过弹窗配置保存 API Key 到 `chrome.storage.local`，此 `.env` 文件仅作本地参考
+## 所需 API
+
+| 服务 | 地址 | 用途 |
+|------|------|------|
+| DeepSeek | https://platform.deepseek.com/ | AI 词源内容生成 |
+| AnkiConnect | http://127.0.0.1:8765/ | Anki 本地通信（免费，需安装 Anki 插件） |
+
+## 存储键值参考（chrome.storage.local）
+
+供开发者参考，以下为扩展使用的存储键：
+
+```
+apiKey           — DeepSeek API Key
+modelName        — 模型名称，默认 "deepseek-chat"
+deckName         — 目标 Anki 牌组
+attachAudio      — 是否导入音频
+youdaoFallback   — Cambridge 失败时用有道兜底
+allowDuplicate   — 允许重复导入
+autoImportOnCopy — 复制即导入
+concurrency      — 批量并发数 (1-8)
+wordsInput       — 批量单词输入
+```
